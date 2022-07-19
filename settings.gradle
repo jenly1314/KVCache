@@ -1,0 +1,3 @@
+rootProject.name = "KVCache"
+include ':app'
+include ':kvcache'
