@@ -3,7 +3,7 @@
 [![Download](https://img.shields.io/badge/download-App-blue.svg)](https://raw.githubusercontent.com/jenly1314/KVCache/master/app/release/app-release.apk)
 [![MavenCentral](https://img.shields.io/maven-central/v/com.github.jenly1314/kvcache)](https://repo1.maven.org/maven2/com/github/jenly1314/kvcache)
 [![JitPack](https://jitpack.io/v/jenly1314/KVCache.svg)](https://jitpack.io/#jenly1314/KVCache)
-[![CI](https://travis-ci.com/jenly1314/KVCache.svg?branch=master)](https://travis-ci.com/jenly1314/KVCache)
+[![CI](https://app.travis-ci.com/jenly1314/KVCache.svg?branch=master)](https://app.travis-ci.com/github/jenly1314/KVCache)
 [![CircleCI](https://circleci.com/gh/jenly1314/KVCache.svg?style=svg)](https://circleci.com/gh/jenly1314/KVCache)
 [![API](https://img.shields.io/badge/API-21%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/mit-license.php)
@@ -12,9 +12,8 @@
 
 KVCache 是一个便于统一管理的键值缓存库；支持无缝切换缓存实现。
 
-> 你可以无需关心 API 之间的差异，无缝切换至：**MMKV** 、 **DataStore** 、 **SharedPreferences** 缓存的实现；
-
-> 利用kotlin的委托属性特性，使用更简洁。
+* 你可以无需关心 API 之间的差异，无缝切换至：**MMKV** 、 **DataStore** 、 **SharedPreferences** 缓存的实现；
+* 利用kotlin的委托属性特性，使用更简洁。
 
 ## 引入
 
