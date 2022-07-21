@@ -6,6 +6,9 @@ import android.util.Log
 import com.king.kvcache.KVCache
 import com.king.kvcache.app.bean.ParcelableBean
 import com.king.kvcache.app.databinding.ActivityMainBinding
+import com.king.kvcache.kvCache
+import com.king.kvcache.kvCacheBoolean
+import com.king.kvcache.kvCacheInt
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,6 +17,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
+    // 属性委托：相当于 KVCache.getInt("arg1"); 类型为：Int（key的默认值如果忽略或为空时，则默认值为变量的名称）
+    var arg1 by kvCacheInt()
+    // 属性委托：相当于 KVCache.getFloat("param1"); 类型为：Float（默认值为：0F）
+    var arg2 : Float by kvCache("argFloat", 0F)
+    // 属性委托：相当于 KVCache.getDouble("arg3"); 类型为：Double（key的默认值如果忽略或为空时，则默认值为变量的名称）
+    var arg3 by kvCache(defaultValue =  0.0)
+    // 函数 kvCache 与 kvCacheXXX （XXX: 表示类型，如：kvCacheInt）用法基本一致，只是表现形式不同，由于 kvCache 有多个函数名称相同，所以需要传默认值，根据默认值的类型来推断使用的是哪个函数
+    var arg4 by kvCache("argBool", false)
+    // 这里让 arg4 和 arg5 指向相同的key
+    var arg5 by kvCacheBoolean("argBool")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,6 +114,34 @@ class MainActivity : AppCompatActivity() {
             builder.append("$cacheProvider: parcelable = ${KVCache.getParcelable<ParcelableBean>("parcelable")}").append("\n")
 
         }
+
+        Log.d(TAG, "// -------- kvCache")
+        builder.append("// -------- kvCache").append("\n")
+
+        // 属性委托：arg1 = 5 相当于：KVCache.put("arg1", 5)，再打印查看 KVCache.getInt("arg1") 的值
+        arg1 = 5
+        Log.d(TAG, "$cacheProvider: kvCache -> arg1 = ${KVCache.getInt("arg1")}")
+        builder.append("$cacheProvider: kvCache -> arg1 = ${KVCache.getInt("arg1")}").append("\n")
+
+        // 属性委托：arg2 = 6F 相当于：KVCache.put("argFloat", 6F)，再打印查看 KVCache.getFloat("argFloat") 的值
+        arg2 = 6F
+        Log.d(TAG, "$cacheProvider: kvCache -> arg2 = ${KVCache.getFloat("argFloat")}")
+        builder.append("$cacheProvider: kvCache -> arg2 = ${KVCache.getFloat("argFloat")}").append("\n")
+
+        // 属性委托：通过 KVCache 缓存值后，再打印查看 arg3 的值; 相当于：属性的 getValue 取 KVCache.getDouble("arg3") 的值
+        KVCache.put("arg3", 7.0)
+        Log.d(TAG, "$cacheProvider: kvCache -> arg3 = $arg3")
+        builder.append("$cacheProvider: kvCache -> arg3 = $arg3").append("\n")
+
+        // 属性委托：arg4 = true 相当于：KVCache.put("argBool", true)，再打印查看 KVCache.getBoolean("argBool") 的值
+        arg4 = true
+        Log.d(TAG, "$cacheProvider: kvCache -> arg4 = ${KVCache.getBoolean("argBool")}")
+        builder.append("$cacheProvider: kvCache -> arg4 = ${KVCache.getBoolean("argBool")}").append("\n")
+
+        // 因为 arg4 和 arg5 使用相同的 key，所以改变 arg4 = true 后，arg5 的值也将改变；即都是取的 KVCache.getBoolean("argBool") 的值
+        Log.d(TAG, "$cacheProvider: kvCache -> arg5 = $arg5")
+        builder.append("$cacheProvider: kvCache -> arg5 = $arg5").append("\n")
+
 
         Log.d(TAG, "// ------------------------------------------------ //")
         builder.append("// ------------------------------------------------ //").append("\n\n")

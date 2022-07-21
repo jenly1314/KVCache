@@ -11,53 +11,53 @@ import java.lang.NullPointerException
  */
 internal class SharedPreferencesCache(context: Context) : Cache() {
 
-    private val map by lazy { context.applicationContext.getSharedPreferences("sp_cache", 0) }
+    private val cache by lazy { context.applicationContext.getSharedPreferences("sp_cache", 0) }
 
     init {
-        if (map == null) {
+        if (cache == null) {
             throw NullPointerException()
         }
     }
 
     override fun put(key: String, value: Float?) {
         value?.let {
-            map.edit().putFloat(key, it).apply()
+            cache.edit().putFloat(key, it).apply()
         } ?: remove(key)
     }
 
     override fun put(key: String, value: Int?) {
         value?.let {
-            map.edit().putInt(key, it).apply()
+            cache.edit().putInt(key, it).apply()
         } ?: remove(key)
     }
 
     override fun put(key: String, value: Double?) {
         value?.let {
-            map.edit().putFloat(key, it.toFloat()).apply()
+            cache.edit().putFloat(key, it.toFloat()).apply()
         } ?: remove(key)
     }
 
     override fun put(key: String, value: Long?) {
         value?.let {
-            map.edit().putLong(key, it).apply()
+            cache.edit().putLong(key, it).apply()
         } ?: remove(key)
     }
 
     override fun put(key: String, value: Boolean?) {
         value?.let {
-            map.edit().putBoolean(key, it).apply()
+            cache.edit().putBoolean(key, it).apply()
         } ?: remove(key)
     }
 
     override fun put(key: String, value: String?) {
         value?.let {
-            map.edit().putString(key, it).apply()
+            cache.edit().putString(key, it).apply()
         } ?: remove(key)
     }
 
     override fun put(key: String, value: Set<String>?) {
         value?.let {
-            map.edit().putStringSet(key, it).apply()
+            cache.edit().putStringSet(key, it).apply()
         } ?: remove(key)
     }
 
@@ -70,31 +70,31 @@ internal class SharedPreferencesCache(context: Context) : Cache() {
     }
 
     override fun getFloat(key: String, defValue: Float): Float {
-        return map.getFloat(key, defValue)
+        return cache.getFloat(key, defValue)
     }
 
     override fun getInt(key: String, defValue: Int): Int {
-        return map.getInt(key, defValue)
+        return cache.getInt(key, defValue)
     }
 
     override fun getDouble(key: String, defValue: Double): Double {
-        return map.getFloat(key, defValue.toFloat()).toDouble()
+        return cache.getFloat(key, defValue.toFloat()).toDouble()
     }
 
     override fun getLong(key: String, defValue: Long): Long {
-        return map.getLong(key, defValue)
+        return cache.getLong(key, defValue)
     }
 
     override fun getBoolean(key: String, defValue: Boolean): Boolean {
-        return map.getBoolean(key, defValue)
+        return cache.getBoolean(key, defValue)
     }
 
     override fun getString(key: String, defValue: String?): String? {
-        return map.getString(key, defValue)
+        return cache.getString(key, defValue)
     }
 
     override fun getStringSet(key: String, defValue: Set<String>?): Set<String>? {
-        return map.getStringSet(key, defValue)
+        return cache.getStringSet(key, defValue)
     }
 
     override fun getByteArray(key: String, defValue: ByteArray?): ByteArray? {
@@ -110,7 +110,7 @@ internal class SharedPreferencesCache(context: Context) : Cache() {
     }
 
     override fun remove(key: String) {
-        map.edit().remove(key).apply()
+        cache.edit().remove(key).apply()
     }
 }
 

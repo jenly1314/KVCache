@@ -10,7 +10,11 @@
 [![Blog](https://img.shields.io/badge/blog-Jenly-9933CC.svg)](https://jenly1314.github.io/)
 [![QQGroup](https://img.shields.io/badge/QQGroup-20867961-blue.svg)](http://shang.qq.com/wpa/qunwpa?idkey=8fcc6a2f88552ea44b1411582c94fd124f7bb3ec227e2a400dbbfaad3dc2f5ad)
 
-KVCache 是一个便于统一管理的键值缓存库；支持无缝切换缓存实现。（你可以无需关心 API 之间的差异，无缝切换至：**MMKV** 、 **DataStore** 、 **SharedPreferences** 缓存的实现）
+KVCache 是一个便于统一管理的键值缓存库；支持无缝切换缓存实现。
+
+> 你可以无需关心 API 之间的差异，无缝切换至：**MMKV** 、 **DataStore** 、 **SharedPreferences** 缓存的实现；
+
+> 利用kotlin的委托属性特性，使用更简洁。
 
 ## 引入
 
@@ -29,7 +33,7 @@ allprojects {
 
 2. 在Module的 **build.gradle** 里面添加引入依赖项
 ```gradle
-implementation 'com.github.jenly1314:kvcache:1.0.0'
+implementation 'com.github.jenly1314:kvcache:1.0.1'
 
 ```
 
@@ -112,8 +116,45 @@ KVCache 的使用（补充：MMKV 额外缓存支持的类型）
 
 ```
 
-测试的缓存读写日志
+kvCache 属性委托使用示例
+```kotlin
+
+    // 属性委托：相当于 KVCache.getInt("arg1"); 类型为：Int（key的默认值如果忽略或为空时，则默认值为变量的名称）
+    var arg1 by kvCacheInt()
+    // 属性委托：相当于 KVCache.getFloat("param1"); 类型为：Float（默认值为：0F）
+    var arg2 : Float by kvCache("argFloat", 0F)
+    // 属性委托：相当于 KVCache.getDouble("arg3"); 类型为：Double（key的默认值如果忽略或为空时，则默认值为变量的名称）
+    var arg3 by kvCache(defaultValue =  0.0)
+    // 函数 kvCache 与 kvCacheXXX （XXX: 表示类型，如：kvCacheInt）用法基本一致，只是表现形式不同，由于 kvCache 有多个函数名称相同，所以需要传默认值，根据默认值的类型来推断使用的是哪个函数
+    var arg4 by kvCache("argBool", false)
+    // 这里让 arg4 和 arg5 指向相同的key
+    var arg5 by kvCacheBoolean("argBool")
+    
+    
+    //... 使用
+
+    // 属性委托：arg1 = 5 相当于：KVCache.put("arg1", 5)，再打印查看 KVCache.getInt("arg1") 的值
+    arg1 = 5
+    Log.d(TAG, "$cacheProvider: kvCache -> arg1 = ${KVCache.getInt("arg1")}")
+
+    // 属性委托：arg2 = 6F 相当于：KVCache.put("argFloat", 6F)，再打印查看 KVCache.getFloat("argFloat") 的值
+    arg2 = 6F
+    Log.d(TAG, "$cacheProvider: kvCache -> arg2 = ${KVCache.getFloat("argFloat")}")
+
+    // 属性委托：通过 KVCache 缓存值后，再打印查看 arg3 的值; 相当于：属性的 getValue 取 KVCache.getDouble("arg3") 的值
+    KVCache.put("arg3", 7.0)
+    Log.d(TAG, "$cacheProvider: kvCache -> arg3 = $arg3")
+
+    // 属性委托：arg4 = true 相当于：KVCache.put("argBool", true)，再打印查看 KVCache.getBoolean("argBool") 的值
+    arg4 = true
+    Log.d(TAG, "$cacheProvider: kvCache -> arg4 = ${KVCache.getBoolean("argBool")}")
+
+    // 因为 arg4 和 arg5 使用相同的 key，所以改变 arg4 = true 后，arg5 的值也将改变；即都是取的 KVCache.getBoolean("argBool") 的值
+    Log.d(TAG, "$cacheProvider: kvCache -> arg5 = $arg5")
 ```
+
+测试日志
+```logcatfilter
 // ---------------- Provider: MMKVCache
 CacheProvider: MMKVCache
 MMKVCache: float = 1.0
@@ -125,6 +166,12 @@ MMKVCache: string = KVCache
 MMKVCache: stringSet = [1, 2, 3]
 MMKVCache: byteArray = [1, 2, 3]
 MMKVCache: parcelable = ParcelableBean(name=ParcelableBean, i=10, bool=true)
+// -------- kvCache
+MMKVCache: kvCache -> arg1 = 5
+MMKVCache: kvCache -> arg2 = 6.0
+MMKVCache: kvCache -> arg3 = 7.0
+MMKVCache: kvCache -> arg4 = true
+MMKVCache: kvCache -> arg5 = true
 // ------------------------------------------------ //
 
 // ---------------- Provider: DataStoreCache
@@ -136,17 +183,30 @@ DataStoreCache: long = 4
 DataStoreCache: boolean = true
 DataStoreCache: string = KVCache
 DataStoreCache: stringSet = [1, 2, 3]
+// -------- kvCache
+DataStoreCache: kvCache -> arg1 = 5
+DataStoreCache: kvCache -> arg2 = 6.0
+DataStoreCache: kvCache -> arg3 = 7.0
+DataStoreCache: kvCache -> arg4 = true
+DataStoreCache: kvCache -> arg5 = true
 // ------------------------------------------------ //
 
 // ---------------- Provider: SharedPreferencesCache
 CacheProvider: SharedPreferencesCache
 SharedPreferencesCache: float = 1.0
+SharedPreferencesCache: remove.. float = 0.0
 SharedPreferencesCache: int = 2
 SharedPreferencesCache: double = 3.0
 SharedPreferencesCache: long = 4
 SharedPreferencesCache: boolean = true
 SharedPreferencesCache: string = KVCache
 SharedPreferencesCache: stringSet = [1, 2, 3]
+// -------- kvCache
+SharedPreferencesCache: kvCache -> arg1 = 5
+SharedPreferencesCache: kvCache -> arg2 = 6.0
+SharedPreferencesCache: kvCache -> arg3 = 7.0
+SharedPreferencesCache: kvCache -> arg4 = true
+SharedPreferencesCache: kvCache -> arg5 = true
 // ------------------------------------------------ //
 
 ```
@@ -162,6 +222,9 @@ SharedPreferencesCache: stringSet = [1, 2, 3]
 
 
 ## 版本记录
+
+#### v1.0.1：2022-7-21
+*  支持属性委托
 
 #### v1.0.0：2022-7-19
 *  KVCache初始版本

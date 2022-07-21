@@ -216,12 +216,14 @@ internal class DataStoreCache(context: Context) : Cache() {
 
     override fun remove(key: String) {
         runBlocking {
+            // 由于 DataStore 不支持 remove，所以这里都还原成默认值
             cache.edit {
                 it[intPreferencesKey(key)] = 0
                 it[floatPreferencesKey(key)] = 0F
                 it[doublePreferencesKey(key)] = 0.0
                 it[longPreferencesKey(key)] = 0L
                 it[booleanPreferencesKey(key)] = false
+                // （String 的默认值本应是 null，由于不能为 null，这里还原成 ""）
                 it[stringPreferencesKey(key)] = ""
             }
         }
