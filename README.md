@@ -1,9 +1,9 @@
 # KVCache
 
 [![Download](https://img.shields.io/badge/download-App-blue.svg)](https://raw.githubusercontent.com/jenly1314/KVCache/master/app/release/app-release.apk)
-[![MavenCentral](https://img.shields.io/maven-central/v/com.github.jenly1314/kvcache)](https://repo1.maven.org/maven2/com/github/jenly1314/kvcache)
+[![MavenCentral](https://img.shields.io/maven-central/v/com.github.jenly1314/kvcache)](https://repo1.maven.org/maven2/com/github/jenly1314/kvcache/)
 [![JitPack](https://jitpack.io/v/jenly1314/KVCache.svg)](https://jitpack.io/#jenly1314/KVCache)
-[![CI](https://app.travis-ci.com/jenly1314/KVCache.svg?branch=master)](https://app.travis-ci.com/github/jenly1314/KVCache)
+[![CI](https://app.travis-ci.com/jenly1314/KVCache.svg?branch=master)](https://app.travis-ci.com/github/jenly1314/KVCache/)
 [![CircleCI](https://circleci.com/gh/jenly1314/KVCache.svg?style=svg)](https://circleci.com/gh/jenly1314/KVCache)
 [![API](https://img.shields.io/badge/API-21%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/mit-license.php)
