@@ -210,12 +210,11 @@ SharedPreferencesCache: kvCache -> arg5 = true
 
 ```
 
+更多使用详情，请查看[Demo](app)中的源码使用示例或直接查看[API帮助文档](https://jitpack.io/com/github/jenly1314/KVCache/latest/javadoc/)
+
 ## 相关推荐
 
 #### [AndroidKTX](https://github.com/AndroidKTX/AndroidKTX) 一个简化 Android 开发的 Kotlin 工具类集
-
-
-更多使用详情，请查看[Demo](app)中的源码使用示例或直接查看[API帮助文档](https://jitpack.io/com/github/jenly1314/KVCache/latest/javadoc/)
 
 ## 感谢
 
