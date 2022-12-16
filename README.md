@@ -32,7 +32,7 @@ allprojects {
 
 2. 在Module的 **build.gradle** 里面添加引入依赖项
 ```gradle
-implementation 'com.github.jenly1314:kvcache:1.0.1'
+implementation 'com.github.jenly1314:kvcache:1.1.0'
 
 ```
 
@@ -52,6 +52,10 @@ Provider 说明
          * 使用 SharedPreferences 提供缓存实现
          */
         Provider.SHARED_PREFERENCES_CACHE
+        /**
+         * 使用 Memory 提供缓存实现
+         */
+        Provider.MEMORY_CACHE
 ```
 > 在初始化 KVCache 时，可能会用到 Provider
 
@@ -62,7 +66,7 @@ KVCache 初始化
 KVCache.initialize(this, provider)
 
 ```
-> 初始化 KVCache 时，如果不传 provider, 则会自动决定缓存实现：优先级从高到低依次为： MMKV -> DataStore -> SharedPreferences
+> 初始化 KVCache 时，如果不传 provider, 则会自动决定缓存实现：优先级从高到低依次为： MMKV -> DataStore -> SharedPreferences -> Memory
 
 KVCache 的使用（键值对的读写）
 ```kotlin
@@ -100,18 +104,20 @@ KVCache 的使用（键值对的读写）
 KVCache 的使用（补充：MMKV 额外缓存支持的类型）
 ```kotlin
 
-    // 如果使用的是 MMKV 缓存实现，则额外支持缓存 ByteArray 和 Parcelable
-    if (KVCache.cacheProvider() == KVCache.Provider.MMKV_CACHE) {
+// 如果使用的是 MMKV 或 Memory 缓存实现，则额外支持缓存 ByteArray 和 Parcelable
+if (KVCache.cacheProvider() == KVCache.Provider.MMKV_CACHE || KVCache.cacheProvider() == KVCache.Provider.MEMORY_CACHE) {
 
-        val byteArray: ByteArray = byteArrayOf(1, 2, 3)
-        KVCache.put("byteArray", byteArray)
-        Log.d(TAG, "$cacheProvider: byteArray = ${KVCache.getByteArray("byteArray")?.toList()}")
+    val byteArray: ByteArray = byteArrayOf(1, 2, 3)
+    KVCache.put("byteArray", byteArray)
+    Log.d(TAG, "$cacheProvider: byteArray = ${KVCache.getByteArray("byteArray")?.toList()}")
+    builder.append("$cacheProvider: byteArray = ${KVCache.getByteArray("byteArray")?.toList()}").append("\n")
 
-        val p = ParcelableBean("ParcelableBean", 10, true)
-        KVCache.put("parcelable", p)
-        Log.d(TAG, "$cacheProvider: parcelable = ${KVCache.getParcelable<ParcelableBean>("parcelable")}")
+    val p = ParcelableBean("ParcelableBean", 10, true)
+    KVCache.put("parcelable", p)
+    Log.d(TAG, "$cacheProvider: parcelable = ${KVCache.getParcelable<ParcelableBean>("parcelable")}")
+    builder.append("$cacheProvider: parcelable = ${KVCache.getParcelable<ParcelableBean>("parcelable")}").append("\n")
 
-    }
+}
 
 ```
 
@@ -208,6 +214,25 @@ SharedPreferencesCache: kvCache -> arg4 = true
 SharedPreferencesCache: kvCache -> arg5 = true
 // ------------------------------------------------ //
 
+// ---------------- Provider: MemoryCache
+CacheProvider: MemoryCache
+MemoryCache: float = 1.0
+MemoryCache: remove.. float = 0.0
+MemoryCache: int = 2
+MemoryCache: double = 3.0
+MemoryCache: long = 4
+MemoryCache: boolean = true
+MemoryCache: string = KVCache
+MemoryCache: stringSet = [1, 2, 3]
+MemoryCache: byteArray = [1, 2, 3]
+MemoryCache: parcelable = ParcelableBean(name=ParcelableBean, i=10, bool=true)
+// -------- kvCache
+MemoryCache: kvCache -> arg1 = 5
+MemoryCache: kvCache -> arg2 = 6.0
+MemoryCache: kvCache -> arg3 = 7.0
+MemoryCache: kvCache -> arg4 = true
+MemoryCache: kvCache -> arg5 = true
+// ------------------------------------------------ //
 ```
 
 更多使用详情，请查看[Demo](app)中的源码使用示例或直接查看[API帮助文档](https://jitpack.io/com/github/jenly1314/KVCache/latest/javadoc/)
@@ -225,6 +250,9 @@ SharedPreferencesCache: kvCache -> arg5 = true
 
 ## 版本记录
 
+#### v1.1.0：2022-12-16
+*  新增MemoryCache
+
 #### v1.0.1：2022-7-21
 *  支持属性委托
 
@@ -235,14 +263,11 @@ SharedPreferencesCache: kvCache -> arg5 = true
 如果你喜欢KVCache，或感觉KVCache帮助到了你，可以点右上角“Star”支持一下，你的支持就是我的动力，谢谢 :smiley:<p>
 你也可以扫描下面的二维码，请作者喝杯咖啡 :coffee:
 <div>
-<img src="https://jenly1314.github.io/image/pay/wxpay.png" width="280" heght="350">
-<img src="https://jenly1314.github.io/image/pay/alipay.png" width="280" heght="350">
-<img src="https://jenly1314.github.io/image/pay/qqpay.png" width="280" heght="350">
-<img src="https://jenly1314.github.io/image/alipay_red_envelopes.jpg" width="233" heght="350">
+<img src="https://jenly1314.github.io/image/pay/sponsor.png" width="98%">
 </div>
 
 ## 关于我
-Name: <a title="关于作者" href="https://about.me/jenly1314" target="_blank">Jenly</a>
+Name: <a title="关于作者" href="https://jenly1314.github.io" target="_blank">Jenly</a>
 
 Email: <a title="欢迎邮件与我交流" href="mailto:jenly1314@gmail.com" target="_blank">jenly1314#gmail.com</a> / <a title="给我发邮件" href="mailto:jenly1314@vip.qq.com" target="_blank">jenly1314#vip.qq.com</a>
 

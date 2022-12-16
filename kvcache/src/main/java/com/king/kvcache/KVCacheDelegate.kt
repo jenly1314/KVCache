@@ -118,7 +118,9 @@ fun <T: Parcelable> kvCache(key: String? = null, tClass: Class<T>, defaultValue:
 inline fun <reified T : Parcelable> kvCache(key: String? = null, defaultValue: T? = null) = KVCachePropertyParcelable(key, T::class.java, defaultValue)
 
 //----------------------------------------------
-
+/**
+ * 属性委托 [Float]
+ */
 class KVCachePropertyFloat(
     private val key: String?,
     private val defaultValue: Float,
@@ -132,6 +134,9 @@ class KVCachePropertyFloat(
     }
 }
 
+/**
+ * 属性委托 [Int]
+ */
 class KVCachePropertyInt(
     private val key: String?,
     private val defaultValue: Int,
@@ -145,6 +150,9 @@ class KVCachePropertyInt(
     }
 }
 
+/**
+ * 属性委托 [Double]
+ */
 class KVCachePropertyDouble(
     private val key: String?,
     private val defaultValue: Double,
@@ -158,6 +166,9 @@ class KVCachePropertyDouble(
     }
 }
 
+/**
+ * 属性委托 [Long]
+ */
 class KVCachePropertyLong(
     private val key: String?,
     private val defaultValue: Long,
@@ -171,6 +182,9 @@ class KVCachePropertyLong(
     }
 }
 
+/**
+ * 属性委托 [Boolean]
+ */
 class KVCachePropertyBoolean(
     private val key: String?,
     private val defaultValue: Boolean,
@@ -184,6 +198,9 @@ class KVCachePropertyBoolean(
     }
 }
 
+/**
+ * 属性委托 [String]
+ */
 class KVCachePropertyString(
     private val key: String?,
     private val defaultValue: String?
@@ -198,6 +215,9 @@ class KVCachePropertyString(
     }
 }
 
+/**
+ * 属性委托 [Set]
+ */
 class KVCachePropertyStringSet(
     private val key: String?,
     private val defaultValue: Set<String>?
@@ -212,6 +232,9 @@ class KVCachePropertyStringSet(
     }
 }
 
+/**
+ * 属性委托 [ByteArray]
+ */
 class KVCachePropertyByteArray(
     private val key: String?,
     private val defaultValue: ByteArray?
@@ -226,6 +249,9 @@ class KVCachePropertyByteArray(
     }
 }
 
+/**
+ * 属性委托 [Parcelable]
+ */
 class KVCachePropertyParcelable<T: Parcelable>(
     private val key: String?,
     private val tClass: Class<T>,

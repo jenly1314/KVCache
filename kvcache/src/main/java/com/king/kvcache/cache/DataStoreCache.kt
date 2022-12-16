@@ -2,6 +2,7 @@ package com.king.kvcache.cache
 
 import android.content.Context
 import android.os.Parcelable
+import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
@@ -13,11 +14,6 @@ import kotlinx.coroutines.runBlocking
 internal class DataStoreCache(context: Context) : Cache() {
 
     private val cache by lazy { context.applicationContext.dataStoreCache }
-
-    init {
-        context.applicationContext.dataStoreCache
-    }
-
 
     override fun put(key: String, value: Float?) {
         value?.let {

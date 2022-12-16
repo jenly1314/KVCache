@@ -1,109 +1,112 @@
 package com.king.kvcache.cache
 
-import android.content.Context
 import android.os.Parcelable
-import android.content.SharedPreferences
+import java.util.concurrent.ConcurrentHashMap
 
 /**
- * 基于 [SharedPreferences] 实现的键值对缓存
+ * 基于 [ConcurrentHashMap] 实现的键值对缓存；主要应用场景：只需使用内存进行缓存即可满足需求；如：单元测试
  * @author <a href="mailto:jenly1314@gmail.com">Jenly</a>
  */
-internal class SharedPreferencesCache(context: Context) : Cache() {
+internal class MemoryCache : Cache() {
 
-    private val cache by lazy { context.applicationContext.getSharedPreferences(cacheProvider(), Context.MODE_PRIVATE) }
+    private val cache by lazy { ConcurrentHashMap<String, Any>() }
 
     override fun put(key: String, value: Float?) {
         value?.let {
-            cache.edit().putFloat(key, it).apply()
+            cache[key] = it
         } ?: remove(key)
     }
 
     override fun put(key: String, value: Int?) {
         value?.let {
-            cache.edit().putInt(key, it).apply()
+            cache[key] = it
         } ?: remove(key)
     }
 
     override fun put(key: String, value: Double?) {
         value?.let {
-            cache.edit().putFloat(key, it.toFloat()).apply()
+            cache[key] = it
         } ?: remove(key)
     }
 
     override fun put(key: String, value: Long?) {
         value?.let {
-            cache.edit().putLong(key, it).apply()
+            cache[key] = it
         } ?: remove(key)
     }
 
     override fun put(key: String, value: Boolean?) {
         value?.let {
-            cache.edit().putBoolean(key, it).apply()
+            cache[key] = it
         } ?: remove(key)
     }
 
     override fun put(key: String, value: String?) {
         value?.let {
-            cache.edit().putString(key, it).apply()
+            cache[key] = it
         } ?: remove(key)
     }
 
     override fun put(key: String, value: Set<String>?) {
         value?.let {
-            cache.edit().putStringSet(key, it).apply()
+            cache[key] = it
         } ?: remove(key)
     }
 
     override fun put(key: String, value: ByteArray?) {
-        throw IllegalArgumentException("Illegal value type ByteArray for key \"$key\"")
+        value?.let {
+            cache[key] = it
+        } ?: remove(key)
     }
 
     override fun put(key: String, value: Parcelable?) {
-        throw IllegalArgumentException("Illegal value type Parcelable for key \"$key\"")
+        value?.let {
+            cache[key] = it
+        } ?: remove(key)
     }
 
     override fun getFloat(key: String, defValue: Float): Float {
-        return cache.getFloat(key, defValue)
+        return cache[key] as? Float ?: defValue
     }
 
     override fun getInt(key: String, defValue: Int): Int {
-        return cache.getInt(key, defValue)
+        return cache[key] as? Int ?: defValue
     }
 
     override fun getDouble(key: String, defValue: Double): Double {
-        return cache.getFloat(key, defValue.toFloat()).toDouble()
+        return cache[key] as? Double ?: defValue
     }
 
     override fun getLong(key: String, defValue: Long): Long {
-        return cache.getLong(key, defValue)
+        return cache[key] as? Long ?: defValue
     }
 
     override fun getBoolean(key: String, defValue: Boolean): Boolean {
-        return cache.getBoolean(key, defValue)
+        return cache[key] as? Boolean ?: defValue
     }
 
     override fun getString(key: String, defValue: String?): String? {
-        return cache.getString(key, defValue)
+        return cache[key] as? String ?: defValue
     }
 
     override fun getStringSet(key: String, defValue: Set<String>?): Set<String>? {
-        return cache.getStringSet(key, defValue)
+        return cache[key] as? Set<String> ?: defValue
     }
 
     override fun getByteArray(key: String, defValue: ByteArray?): ByteArray? {
-        return defValue
+        return cache[key] as? ByteArray ?: defValue
     }
 
     override fun <T : Parcelable> getParcelable(key: String, tClass: Class<T>): T? {
-        return getParcelable(key, tClass, null)
+        return cache[key] as? T
     }
 
     override fun <T : Parcelable> getParcelable(key: String, tClass: Class<T>, defValue: T?): T? {
-        return defValue
+        return cache[key] as? T ?: defValue
     }
 
     override fun remove(key: String) {
-        cache.edit().remove(key).apply()
+        cache.remove(key)
     }
 }
 

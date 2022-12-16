@@ -42,6 +42,8 @@ class MainActivity : AppCompatActivity() {
         testKVCache(KVCache.Provider.DATA_STORE_CACHE)
         // 使用 SharedPreferences 提供缓存实现
         testKVCache(KVCache.Provider.SHARED_PREFERENCES_CACHE)
+        // 使用 Memory 提供缓存实现
+        testKVCache(KVCache.Provider.MEMORY_CACHE)
     }
 
 
@@ -100,8 +102,8 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "$cacheProvider: stringSet = ${KVCache.getStringSet("stringSet")}")
         builder.append("$cacheProvider: stringSet = ${KVCache.getStringSet("stringSet")}").append("\n")
 
-        // 如果使用的是 MMKV 缓存实现，则额外支持缓存 ByteArray 和 Parcelable
-        if (KVCache.cacheProvider() == KVCache.Provider.MMKV_CACHE) {
+        // 如果使用的是 MMKV 或 Memory 缓存实现，则额外支持缓存 ByteArray 和 Parcelable
+        if (KVCache.cacheProvider() == KVCache.Provider.MMKV_CACHE || KVCache.cacheProvider() == KVCache.Provider.MEMORY_CACHE) {
 
             val byteArray: ByteArray = byteArrayOf(1, 2, 3)
             KVCache.put("byteArray", byteArray)

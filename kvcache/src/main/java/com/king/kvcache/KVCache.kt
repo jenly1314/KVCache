@@ -29,7 +29,11 @@ object KVCache : ICache, CacheProvider {
         /**
          * 使用 SharedPreferences 提供缓存实现
          */
-        Provider.SHARED_PREFERENCES_CACHE
+        Provider.SHARED_PREFERENCES_CACHE,
+        /**
+         * 使用 Memory 提供缓存实现
+         */
+        Provider.MEMORY_CACHE
     )
     @Target(AnnotationTarget.VALUE_PARAMETER, AnnotationTarget.FIELD, AnnotationTarget.FUNCTION)
     @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
@@ -50,6 +54,11 @@ object KVCache : ICache, CacheProvider {
              */
             const val SHARED_PREFERENCES_CACHE = "SharedPreferencesCache"
 
+            /**
+             * 使用 Memory 提供缓存实现
+             */
+            const val MEMORY_CACHE = "MemoryCache"
+
         }
     }
 
@@ -66,7 +75,8 @@ object KVCache : ICache, CacheProvider {
     /**
      * 初始化；建议在 Application 中进行初始化
      * @param context 上下文
-     * @param provider 缓存提供者，参见 [Provider]；当 provider 为空或未知时，会自动决定缓存实现：优先级从高到低依次为： MMKV -> DataStore -> SharedPreferences
+     * @param provider 缓存提供者，参见 [Provider]；当 provider 为空或未知时，会自动决定缓存实现：优先级
+     * 从高到低依次为： MMKV -> DataStore -> SharedPreferences -> Memory
      */
     @JvmOverloads
     fun initialize(context: Context, @Provider provider: String? = null) {
@@ -79,6 +89,7 @@ object KVCache : ICache, CacheProvider {
      *
      * @param cache 缓存实现；如果 initialize(context, cacheProvider) 无法满足你的需求，你可以通过此函数来初始化缓存
      */
+    @JvmOverloads
     fun initialize(cache: Cache) {
         this.cache = cache
         this.isInitializedCache = true
@@ -92,13 +103,18 @@ object KVCache : ICache, CacheProvider {
             Provider.MMKV_CACHE -> MMKVCache(context)
             Provider.DATA_STORE_CACHE -> DataStoreCache(context)
             Provider.SHARED_PREFERENCES_CACHE -> SharedPreferencesCache(context)
+            Provider.MEMORY_CACHE -> MemoryCache()
             else -> try {
                 MMKVCache(context)
             } catch (e: Throwable) {
                 try {
                     DataStoreCache(context)
                 } catch (e: Throwable) {
-                    SharedPreferencesCache(context)
+                    try {
+                        SharedPreferencesCache(context)
+                    } catch (e: Throwable) {
+                        MemoryCache()
+                    }
                 }
             }
         }
