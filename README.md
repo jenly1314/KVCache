@@ -14,7 +14,8 @@ KVCache 是一个便于统一管理的键值缓存库；支持无缝切换缓存
 
 **主要有如下特点：**
 
-* 你可以无需关心 API 之间的差异，无缝切换至：**MMKV** 、**DataStore** 、**SharedPreferences**、**Memory** 缓存的实现；
+* 支持无缝切换缓存的实现；（主要包括：**MMKV** 、**DataStore** 、**SharedPreferences**、**Memory**）
+* 你可以无需关心 API 之间的差异，使用时就像使用Map一样简单；
 * 利用Kotlin的委托属性特性，使用更简洁。
 
 ## 引入
