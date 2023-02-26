@@ -6,6 +6,7 @@ import com.tencent.mmkv.MMKV
 
 /**
  * 基于 [MMKV] 实现的键值对缓存
+ *
  * @author <a href="mailto:jenly1314@gmail.com">Jenly</a>
  */
 internal class MMKVCache(context: Context) : Cache() {
@@ -110,9 +111,12 @@ internal class MMKVCache(context: Context) : Cache() {
         return cache.decodeParcelable(key, tClass, defValue)
     }
 
-
     override fun remove(key: String) {
         cache.remove(key)
+    }
+
+    override fun clear() {
+        cache.clear()
     }
 }
 

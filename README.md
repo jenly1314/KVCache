@@ -12,8 +12,10 @@
 
 KVCache 是一个便于统一管理的键值缓存库；支持无缝切换缓存实现。
 
+### 主要有如下特点：
+
 * 你可以无需关心 API 之间的差异，无缝切换至：**MMKV** 、 **DataStore** 、 **SharedPreferences** 缓存的实现；
-* 利用kotlin的委托属性特性，使用更简洁。
+* 利用Kotlin的委托属性特性，使用更简洁。
 
 ## 引入
 
@@ -32,13 +34,21 @@ allprojects {
 
 2. 在Module的 **build.gradle** 里面添加引入依赖项
 ```gradle
-implementation 'com.github.jenly1314:kvcache:1.1.0'
+implementation 'com.github.jenly1314:kvcache:1.2.0'
 
 ```
 
-## 示例
+## 使用
 
-Provider 说明
+### KVCache 初始化
+```kotlin
+
+// 建议在 Application 中进行初始化
+KVCache.initialize(this, provider)
+
+```
+
+### Provider 说明
 ```kotlin
        /**
          * 使用 MMKV 提供缓存实现；需依赖 MMKV
@@ -57,18 +67,13 @@ Provider 说明
          */
         Provider.MEMORY_CACHE
 ```
-> 在初始化 KVCache 时，可能会用到 Provider
 
-KVCache 初始化
-```kotlin
-
-// 建议在 Application 中进行初始化
-KVCache.initialize(this, provider)
-
-```
 > 初始化 KVCache 时，如果不传 provider, 则会自动决定缓存实现：优先级从高到低依次为： MMKV -> DataStore -> SharedPreferences -> Memory
 
-KVCache 的使用（键值对的读写）
+### KVCache 基本使用示例
+
+KVCache的主要函数大多以 `put` 和 `get` 开头，使用时和 **bundle** 类似；
+
 ```kotlin
 
     val f = 1.0F
@@ -95,33 +100,26 @@ KVCache 的使用（键值对的读写）
     KVCache.put("string", s)
     Log.d(TAG, "$cacheProvider: string = ${KVCache.getString("string")}")
 
-    val stringSet = setOf("1", "2", "3")
+    val stringSet = setOf("A", "B", "C")
     KVCache.put("stringSet", stringSet)
     Log.d(TAG, "$cacheProvider: stringSet = ${KVCache.getStringSet("stringSet")}")
-
-```
-
-KVCache 的使用（补充：MMKV 额外缓存支持的类型）
-```kotlin
-
-// 如果使用的是 MMKV 或 Memory 缓存实现，则额外支持缓存 ByteArray 和 Parcelable
-if (KVCache.cacheProvider() == KVCache.Provider.MMKV_CACHE || KVCache.cacheProvider() == KVCache.Provider.MEMORY_CACHE) {
 
     val byteArray: ByteArray = byteArrayOf(1, 2, 3)
     KVCache.put("byteArray", byteArray)
     Log.d(TAG, "$cacheProvider: byteArray = ${KVCache.getByteArray("byteArray")?.toList()}")
-    builder.append("$cacheProvider: byteArray = ${KVCache.getByteArray("byteArray")?.toList()}").append("\n")
 
     val p = ParcelableBean("ParcelableBean", 10, true)
     KVCache.put("parcelable", p)
     Log.d(TAG, "$cacheProvider: parcelable = ${KVCache.getParcelable<ParcelableBean>("parcelable")}")
-    builder.append("$cacheProvider: parcelable = ${KVCache.getParcelable<ParcelableBean>("parcelable")}").append("\n")
-
-}
 
 ```
 
-kvCache 属性委托使用示例
+### KVCache 属性委托使用示例
+
+KVCache属性委托目前定义的函数都是 **kvCache** 开头，使用起来也比较简单；
+
+示例如下：
+
 ```kotlin
 
     // 属性委托：相当于 KVCache.getInt("arg1"); 类型为：Int（key的默认值如果忽略或为空时，则默认值为变量的名称）
@@ -158,9 +156,9 @@ kvCache 属性委托使用示例
     Log.d(TAG, "$cacheProvider: kvCache -> arg5 = $arg5")
 ```
 
-测试日志
+### 测试日志
 ```logcatfilter
-// ---------------- Provider: MMKVCache
+// ---------------- Provider: null
 CacheProvider: MMKVCache
 MMKVCache: float = 1.0
 MMKVCache: int = 2
@@ -168,7 +166,7 @@ MMKVCache: double = 3.0
 MMKVCache: long = 4
 MMKVCache: boolean = true
 MMKVCache: string = KVCache
-MMKVCache: stringSet = [1, 2, 3]
+MMKVCache: stringSet = [A, B, C]
 MMKVCache: byteArray = [1, 2, 3]
 MMKVCache: parcelable = ParcelableBean(name=ParcelableBean, i=10, bool=true)
 // -------- kvCache
@@ -178,7 +176,24 @@ MMKVCache: kvCache -> arg3 = 7.0
 MMKVCache: kvCache -> arg4 = true
 MMKVCache: kvCache -> arg5 = true
 // ------------------------------------------------ //
-
+// ---------------- Provider: MMKVCache
+CacheProvider: MMKVCache
+MMKVCache: float = 1.0
+MMKVCache: int = 2
+MMKVCache: double = 3.0
+MMKVCache: long = 4
+MMKVCache: boolean = true
+MMKVCache: string = KVCache
+MMKVCache: stringSet = [A, B, C]
+MMKVCache: byteArray = [1, 2, 3]
+MMKVCache: parcelable = ParcelableBean(name=ParcelableBean, i=10, bool=true)
+// -------- kvCache
+MMKVCache: kvCache -> arg1 = 5
+MMKVCache: kvCache -> arg2 = 6.0
+MMKVCache: kvCache -> arg3 = 7.0
+MMKVCache: kvCache -> arg4 = true
+MMKVCache: kvCache -> arg5 = true
+// ------------------------------------------------ //
 // ---------------- Provider: DataStoreCache
 CacheProvider: DataStoreCache
 DataStoreCache: float = 1.0
@@ -187,7 +202,9 @@ DataStoreCache: double = 3.0
 DataStoreCache: long = 4
 DataStoreCache: boolean = true
 DataStoreCache: string = KVCache
-DataStoreCache: stringSet = [1, 2, 3]
+DataStoreCache: stringSet = [A, B, C]
+DataStoreCache: byteArray = [1, 2, 3]
+DataStoreCache: parcelable = ParcelableBean(name=ParcelableBean, i=10, bool=true)
 // -------- kvCache
 DataStoreCache: kvCache -> arg1 = 5
 DataStoreCache: kvCache -> arg2 = 6.0
@@ -195,17 +212,17 @@ DataStoreCache: kvCache -> arg3 = 7.0
 DataStoreCache: kvCache -> arg4 = true
 DataStoreCache: kvCache -> arg5 = true
 // ------------------------------------------------ //
-
 // ---------------- Provider: SharedPreferencesCache
 CacheProvider: SharedPreferencesCache
 SharedPreferencesCache: float = 1.0
-SharedPreferencesCache: remove.. float = 0.0
 SharedPreferencesCache: int = 2
 SharedPreferencesCache: double = 3.0
 SharedPreferencesCache: long = 4
 SharedPreferencesCache: boolean = true
 SharedPreferencesCache: string = KVCache
-SharedPreferencesCache: stringSet = [1, 2, 3]
+SharedPreferencesCache: stringSet = [A, B, C]
+SharedPreferencesCache: byteArray = [1, 2, 3]
+SharedPreferencesCache: parcelable = ParcelableBean(name=ParcelableBean, i=10, bool=true)
 // -------- kvCache
 SharedPreferencesCache: kvCache -> arg1 = 5
 SharedPreferencesCache: kvCache -> arg2 = 6.0
@@ -213,17 +230,15 @@ SharedPreferencesCache: kvCache -> arg3 = 7.0
 SharedPreferencesCache: kvCache -> arg4 = true
 SharedPreferencesCache: kvCache -> arg5 = true
 // ------------------------------------------------ //
-
 // ---------------- Provider: MemoryCache
 CacheProvider: MemoryCache
 MemoryCache: float = 1.0
-MemoryCache: remove.. float = 0.0
 MemoryCache: int = 2
 MemoryCache: double = 3.0
 MemoryCache: long = 4
 MemoryCache: boolean = true
 MemoryCache: string = KVCache
-MemoryCache: stringSet = [1, 2, 3]
+MemoryCache: stringSet = [A, B, C]
 MemoryCache: byteArray = [1, 2, 3]
 MemoryCache: parcelable = ParcelableBean(name=ParcelableBean, i=10, bool=true)
 // -------- kvCache
@@ -250,14 +265,18 @@ MemoryCache: kvCache -> arg5 = true
 
 ## 版本记录
 
+#### v1.2.0：2023-2-26
+* 支持清空缓存（新增 `clear()` 函数）
+* 优化细节
+
 #### v1.1.0：2022-12-16
-*  新增MemoryCache
+* 新增**MemoryCache**
 
 #### v1.0.1：2022-7-21
-*  支持属性委托
+* 支持属性委托
 
 #### v1.0.0：2022-7-19
-*  KVCache初始版本
+* KVCache初始版本
 
 ## 赞赏
 如果你喜欢KVCache，或感觉KVCache帮助到了你，可以点右上角“Star”支持一下，你的支持就是我的动力，谢谢 :smiley:<p>

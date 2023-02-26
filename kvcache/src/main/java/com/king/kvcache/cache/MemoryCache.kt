@@ -4,7 +4,8 @@ import android.os.Parcelable
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * 基于 [ConcurrentHashMap] 实现的键值对缓存；主要应用场景：只需使用内存进行缓存即可满足需求；如：单元测试
+ * 基于 [Map] 实现的键值对缓存；主要应用场景：只需使用内存进行缓存即可满足需求；如：单元测试
+ *
  * @author <a href="mailto:jenly1314@gmail.com">Jenly</a>
  */
 internal class MemoryCache : Cache() {
@@ -107,6 +108,10 @@ internal class MemoryCache : Cache() {
 
     override fun remove(key: String) {
         cache.remove(key)
+    }
+
+    override fun clear() {
+        cache.clear()
     }
 }
 

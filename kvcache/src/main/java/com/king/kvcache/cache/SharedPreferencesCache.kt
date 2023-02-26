@@ -1,65 +1,87 @@
 package com.king.kvcache.cache
 
 import android.content.Context
-import android.os.Parcelable
 import android.content.SharedPreferences
+import android.os.Parcelable
+import android.util.Base64
+import com.king.kvcache.util.ParcelableUtil
 
 /**
  * 基于 [SharedPreferences] 实现的键值对缓存
+ *
  * @author <a href="mailto:jenly1314@gmail.com">Jenly</a>
  */
 internal class SharedPreferencesCache(context: Context) : Cache() {
 
-    private val cache by lazy { context.applicationContext.getSharedPreferences(cacheProvider(), Context.MODE_PRIVATE) }
+    private val applicationContext = context.applicationContext
+
+    private val cache by lazy {
+        applicationContext.getSharedPreferences(getProvider(), Context.MODE_PRIVATE)
+    }
 
     override fun put(key: String, value: Float?) {
         value?.let {
             cache.edit().putFloat(key, it).apply()
-        } ?: remove(key)
+        } ?: remove(key, false)
     }
 
     override fun put(key: String, value: Int?) {
         value?.let {
             cache.edit().putInt(key, it).apply()
-        } ?: remove(key)
+        } ?: remove(key, false)
     }
 
     override fun put(key: String, value: Double?) {
         value?.let {
             cache.edit().putFloat(key, it.toFloat()).apply()
-        } ?: remove(key)
+        } ?: remove(key, false)
     }
 
     override fun put(key: String, value: Long?) {
         value?.let {
             cache.edit().putLong(key, it).apply()
-        } ?: remove(key)
+        } ?: remove(key, false)
     }
 
     override fun put(key: String, value: Boolean?) {
         value?.let {
             cache.edit().putBoolean(key, it).apply()
-        } ?: remove(key)
+        } ?: remove(key, false)
     }
 
     override fun put(key: String, value: String?) {
         value?.let {
             cache.edit().putString(key, it).apply()
-        } ?: remove(key)
+        } ?: remove(key, false)
     }
 
     override fun put(key: String, value: Set<String>?) {
         value?.let {
             cache.edit().putStringSet(key, it).apply()
-        } ?: remove(key)
+        } ?: remove(key, false)
     }
 
     override fun put(key: String, value: ByteArray?) {
-        throw IllegalArgumentException("Illegal value type ByteArray for key \"$key\"")
+        value?.let {
+            runCatching {
+                // 由于SharedPreferences不支持 ByteArray类型，这里特殊处理
+                cache.edit()
+                    .putString(byteArrayKey(key), Base64.encodeToString(it, Base64.DEFAULT))
+                    .apply()
+            }
+        } ?: remove(byteArrayKey(key), false)
     }
 
     override fun put(key: String, value: Parcelable?) {
-        throw IllegalArgumentException("Illegal value type Parcelable for key \"$key\"")
+        value?.let {
+            runCatching {
+                val bytes = ParcelableUtil.parcelableToByteArray(value)
+                // 由于DataStore不支持 Parcelable类型，这里特殊处理
+                cache.edit()
+                    .putString(parcelableKey(key), Base64.encodeToString(bytes, Base64.DEFAULT))
+                    .apply()
+            }
+        } ?: remove(parcelableKey(key), false)
     }
 
     override fun getFloat(key: String, defValue: Float): Float {
@@ -91,7 +113,11 @@ internal class SharedPreferencesCache(context: Context) : Cache() {
     }
 
     override fun getByteArray(key: String, defValue: ByteArray?): ByteArray? {
-        return defValue
+        return cache.getString(byteArrayKey(key), null)?.let {
+            runCatching {
+                Base64.decode(it, Base64.DEFAULT)
+            }.getOrDefault(defValue)
+        } ?: defValue
     }
 
     override fun <T : Parcelable> getParcelable(key: String, tClass: Class<T>): T? {
@@ -99,11 +125,48 @@ internal class SharedPreferencesCache(context: Context) : Cache() {
     }
 
     override fun <T : Parcelable> getParcelable(key: String, tClass: Class<T>, defValue: T?): T? {
-        return defValue
+        return cache.getString(parcelableKey(key), null)?.let {
+            try {
+                val bytes = Base64.decode(it, Base64.DEFAULT)
+                ParcelableUtil.byteArrayToParcelable(applicationContext, bytes)
+            } catch (e: Exception) {
+                defValue
+            }
+        } ?: defValue
     }
 
     override fun remove(key: String) {
-        cache.edit().remove(key).apply()
+        remove(key, true)
+    }
+
+    private fun remove(key: String, flag: Boolean) {
+        cache.edit().also {
+            it.remove(key)
+            if (flag) {
+                it.remove(byteArrayKey(key))
+                it.remove(parcelableKey(key))
+            }
+        }.apply()
+    }
+
+    override fun clear() {
+        cache.edit().clear().apply()
+    }
+
+    /**
+     * ByteArray Key
+     */
+    private fun byteArrayKey(key: String) = "${BYTE_ARRAY_FLAG}_$key"
+
+    /**
+     * Parcelable Key
+     */
+    private fun parcelableKey(key: String) = "${PARCELABLE_FLAG}_$key"
+
+    companion object {
+        private const val BYTE_ARRAY_FLAG = "BYTE_ARRAY"
+
+        private const val PARCELABLE_FLAG = "PARCELABLE_FLAG"
     }
 }
 

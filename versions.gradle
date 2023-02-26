@@ -1,8 +1,8 @@
 
 //App
 def app_version = [:]
-app_version.versionCode = 3
-app_version.versionName = "1.1.0"
+app_version.versionCode = 4
+app_version.versionName = "1.2.0"
 ext.app_version = app_version
 
 //build version
@@ -26,7 +26,7 @@ versions.junit = "4.13.1"
 versions.androidExtJunit = "1.1.2"
 versions.espressoCore = "3.3.0"
 
-versions.mmkv = "1.2.14"
+versions.mmkv = "1.2.15"
 versions.datastore = "1.0.0"
 
 ext.versions = versions

@@ -2,25 +2,30 @@ package com.king.kvcache.cache
 
 import android.content.Context
 import android.os.Parcelable
+import android.util.Base64
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
-import kotlinx.coroutines.flow.*
+import com.king.kvcache.util.ParcelableUtil
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
 /**
  * 基于 [DataStore] 实现的键值对缓存
+ *
  * @author <a href="mailto:jenly1314@gmail.com">Jenly</a>
  */
 internal class DataStoreCache(context: Context) : Cache() {
 
-    private val cache by lazy { context.applicationContext.dataStoreCache }
+    private val applicationContext = context.applicationContext
+
+    private val cache by lazy { applicationContext.dataStoreCache }
 
     override fun put(key: String, value: Float?) {
         value?.let {
             runBlocking {
                 cache.edit { it[floatPreferencesKey(key)] = value }
             }
-        } ?: remove(key)
+        } ?: remove(floatPreferencesKey(key))
     }
 
     override fun put(key: String, value: Int?) {
@@ -28,7 +33,7 @@ internal class DataStoreCache(context: Context) : Cache() {
             runBlocking {
                 cache.edit { it[intPreferencesKey(key)] = value }
             }
-        } ?: remove(key)
+        } ?: remove(intPreferencesKey(key))
     }
 
     override fun put(key: String, value: Double?) {
@@ -36,7 +41,7 @@ internal class DataStoreCache(context: Context) : Cache() {
             runBlocking {
                 cache.edit { it[doublePreferencesKey(key)] = value }
             }
-        } ?: remove(key)
+        } ?: remove(doublePreferencesKey(key))
     }
 
     override fun put(key: String, value: Long?) {
@@ -44,7 +49,7 @@ internal class DataStoreCache(context: Context) : Cache() {
             runBlocking {
                 cache.edit { it[longPreferencesKey(key)] = value }
             }
-        } ?: remove(key)
+        } ?: remove(longPreferencesKey(key))
     }
 
     override fun put(key: String, value: Boolean?) {
@@ -52,7 +57,7 @@ internal class DataStoreCache(context: Context) : Cache() {
             runBlocking {
                 cache.edit { it[booleanPreferencesKey(key)] = value }
             }
-        } ?: remove(key)
+        } ?: remove(booleanPreferencesKey(key))
     }
 
     override fun put(key: String, value: String?) {
@@ -60,7 +65,7 @@ internal class DataStoreCache(context: Context) : Cache() {
             runBlocking {
                 cache.edit { it[stringPreferencesKey(key)] = value }
             }
-        } ?: remove(key)
+        } ?: remove(stringPreferencesKey(key))
     }
 
     override fun put(key: String, value: Set<String>?) {
@@ -68,27 +73,46 @@ internal class DataStoreCache(context: Context) : Cache() {
             runBlocking {
                 cache.edit { it[stringSetPreferencesKey(key)] = value }
             }
-        } ?: remove(key)
+        } ?: remove(stringSetPreferencesKey(key))
     }
 
     override fun put(key: String, value: ByteArray?) {
-        throw IllegalArgumentException("Illegal value type ByteArray for key \"$key\"")
+        value?.let {
+            runBlocking {
+                cache.edit {
+                    runCatching {
+                        // 由于DataStore不支持 ByteArray类型，这里特殊处理
+                        it[byteArrayPreferencesKey(key)] =
+                            Base64.encodeToString(value, Base64.DEFAULT)
+                    }
+                }
+            }
+        } ?: remove(byteArrayPreferencesKey(key))
     }
 
     override fun put(key: String, value: Parcelable?) {
-        throw IllegalArgumentException("Illegal value type Parcelable for key \"$key\"")
+        value?.let {
+            runBlocking {
+                cache.edit {
+                    runCatching {
+                        // 由于DataStore不支持 Parcelable类型，这里特殊处理
+                        val bytes = ParcelableUtil.parcelableToByteArray(value)
+                        it[parcelablePreferencesKey(key)] =
+                            Base64.encodeToString(bytes, Base64.DEFAULT)
+                    }
+                }
+            }
+        } ?: remove(parcelablePreferencesKey(key))
     }
 
     override fun getFloat(key: String, defValue: Float): Float {
         var value = defValue
         runBlocking {
             cache.data.first {
-                try{
+                runCatching {
                     it[floatPreferencesKey(key)]?.run {
                         value = this
                     }
-                }catch (e: Exception){
-
                 }
                 true
             }
@@ -100,12 +124,10 @@ internal class DataStoreCache(context: Context) : Cache() {
         var value = defValue
         runBlocking {
             cache.data.first {
-                try{
+                runCatching {
                     it[intPreferencesKey(key)]?.run {
                         value = this
                     }
-                }catch (e: Exception){
-
                 }
                 true
             }
@@ -117,12 +139,10 @@ internal class DataStoreCache(context: Context) : Cache() {
         var value = defValue
         runBlocking {
             cache.data.first {
-                try{
+                runCatching {
                     it[doublePreferencesKey(key)]?.run {
                         value = this
                     }
-                }catch (e: Exception){
-
                 }
                 true
             }
@@ -134,12 +154,10 @@ internal class DataStoreCache(context: Context) : Cache() {
         var value = defValue
         runBlocking {
             cache.data.first {
-                try{
+                runCatching {
                     it[longPreferencesKey(key)]?.run {
                         value = this
                     }
-                }catch (e: Exception){
-
                 }
                 true
             }
@@ -151,12 +169,10 @@ internal class DataStoreCache(context: Context) : Cache() {
         var value = defValue
         runBlocking {
             cache.data.first {
-                try{
+                runCatching {
                     it[booleanPreferencesKey(key)]?.run {
                         value = this
                     }
-                }catch (e: Exception){
-
                 }
                 true
             }
@@ -168,12 +184,10 @@ internal class DataStoreCache(context: Context) : Cache() {
         var value = defValue
         runBlocking {
             cache.data.first {
-                try{
+                runCatching {
                     it[stringPreferencesKey(key)]?.run {
                         value = this
                     }
-                }catch (e: Exception){
-
                 }
                 true
             }
@@ -185,12 +199,10 @@ internal class DataStoreCache(context: Context) : Cache() {
         var value = defValue
         runBlocking {
             cache.data.first {
-                try{
+                runCatching {
                     it[stringSetPreferencesKey(key)]?.run {
                         value = this
                     }
-                }catch (e: Exception){
-
                 }
                 true
             }
@@ -199,7 +211,18 @@ internal class DataStoreCache(context: Context) : Cache() {
     }
 
     override fun getByteArray(key: String, defValue: ByteArray?): ByteArray? {
-        return defValue
+        var value = defValue
+        runBlocking {
+            cache.data.first {
+                runCatching {
+                    it[byteArrayPreferencesKey(key)]?.let {
+                        value = Base64.decode(it, Base64.DEFAULT)
+                    }
+                }
+                true
+            }
+        }
+        return value
     }
 
     override fun <T : Parcelable> getParcelable(key: String, tClass: Class<T>): T? {
@@ -207,24 +230,71 @@ internal class DataStoreCache(context: Context) : Cache() {
     }
 
     override fun <T : Parcelable> getParcelable(key: String, tClass: Class<T>, defValue: T?): T? {
-        return defValue
+        var value = defValue
+        runBlocking {
+            cache.data.first {
+                runCatching {
+                    it[parcelablePreferencesKey(key)]?.let {
+                        val bytes = Base64.decode(it, Base64.DEFAULT)
+                        value = ParcelableUtil.byteArrayToParcelable(applicationContext, bytes)
+                    }
+                }
+                true
+            }
+        }
+        return value
     }
 
     override fun remove(key: String) {
         runBlocking {
-            // 由于 DataStore 不支持 remove，所以这里都还原成默认值
             cache.edit {
-                it[intPreferencesKey(key)] = 0
-                it[floatPreferencesKey(key)] = 0F
-                it[doublePreferencesKey(key)] = 0.0
-                it[longPreferencesKey(key)] = 0L
-                it[booleanPreferencesKey(key)] = false
-                // （String 的默认值本应是 null，由于不能为 null，这里还原成 ""）
-                it[stringPreferencesKey(key)] = ""
+                it.remove(intPreferencesKey(key))
+                it.remove(floatPreferencesKey(key))
+                it.remove(doublePreferencesKey(key))
+                it.remove(longPreferencesKey(key))
+                it.remove(booleanPreferencesKey(key))
+                it.remove(stringPreferencesKey(key))
+                it.remove(stringSetPreferencesKey(key))
+                it.remove(byteArrayPreferencesKey(key))
+                it.remove(parcelablePreferencesKey(key))
             }
         }
     }
 
+    private fun <T> remove(key: Preferences.Key<T>) {
+        runBlocking {
+            cache.edit {
+                it.remove(key)
+            }
+        }
+    }
 
+    override fun clear() {
+        runBlocking {
+            cache.edit {
+                it.clear()
+            }
+        }
+    }
+
+    /**
+     * ByteArray Key
+     */
+    private fun byteArrayPreferencesKey(key: String): Preferences.Key<String> {
+        return stringPreferencesKey("${BYTE_ARRAY_FLAG}_$key")
+    }
+
+    /**
+     * Parcelable Key
+     */
+    private fun parcelablePreferencesKey(key: String): Preferences.Key<String> {
+        return stringPreferencesKey("${PARCELABLE_FLAG}_$key")
+    }
+
+    companion object {
+        private const val BYTE_ARRAY_FLAG = "BYTE_ARRAY"
+
+        private const val PARCELABLE_FLAG = "PARCELABLE_FLAG"
+    }
 }
 

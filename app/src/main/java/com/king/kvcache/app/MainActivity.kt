@@ -4,28 +4,40 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.king.kvcache.KVCache
+import com.king.kvcache.KVCache.Provider
 import com.king.kvcache.app.bean.ParcelableBean
 import com.king.kvcache.app.databinding.ActivityMainBinding
 import com.king.kvcache.kvCache
 import com.king.kvcache.kvCacheBoolean
 import com.king.kvcache.kvCacheInt
 
+/**
+ * KVCache使用示例
+ *
+ * KVCache：统一管理缓存键值；支持无缝切换；KVCache主要有如下特点：
+ *
+ * 你可以无需关心 API 之间的差异，无缝切缓存的内部实现；缓存提供者可参见 [Provider]
+ *
+ * 利用kotlin的委托属性特性，使用更简洁。
+ *
+ * @author <a href="mailto:jenly1314@gmail.com">Jenly</a>
+ */
 class MainActivity : AppCompatActivity() {
-
-    companion object {
-        private const val TAG = "KVCache"
-    }
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     // 属性委托：相当于 KVCache.getInt("arg1"); 类型为：Int（key的默认值如果忽略或为空时，则默认值为变量的名称）
     var arg1 by kvCacheInt()
+
     // 属性委托：相当于 KVCache.getFloat("param1"); 类型为：Float（默认值为：0F）
-    var arg2 : Float by kvCache("argFloat", 0F)
+    var arg2: Float by kvCache("argFloat", 0F)
+
     // 属性委托：相当于 KVCache.getDouble("arg3"); 类型为：Double（key的默认值如果忽略或为空时，则默认值为变量的名称）
-    var arg3 by kvCache(defaultValue =  0.0)
+    var arg3 by kvCache(defaultValue = 0.0)
+
     // 函数 kvCache 与 kvCacheXXX （XXX: 表示类型，如：kvCacheInt）用法基本一致，只是表现形式不同，由于 kvCache 有多个函数名称相同，所以需要传默认值，根据默认值的类型来推断使用的是哪个函数
     var arg4 by kvCache("argBool", false)
+
     // 这里让 arg4 和 arg5 指向相同的key
     var arg5 by kvCacheBoolean("argBool")
 
@@ -34,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.tv.text = ""
-        // 默认：自动查找可用的缓存实现；优先级从高到低依次为： MMKV -> DataStore -> SharedPreferences
+        // 默认：自动查找可用的缓存实现；优先级从高到低依次为： MMKV -> DataStore -> SharedPreferences -> Memory
         testKVCache()
         // 使用 MMKV 提供缓存实现
         testKVCache(KVCache.Provider.MMKV_CACHE)
@@ -46,8 +58,7 @@ class MainActivity : AppCompatActivity() {
         testKVCache(KVCache.Provider.MEMORY_CACHE)
     }
 
-
-    private fun testKVCache(@KVCache.Provider provider: String? = null) {
+    private fun testKVCache(@Provider provider: String? = null) {
 
         val builder = StringBuilder()
 
@@ -57,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         // 初始化 KVCache，建议在 Application 中进行初始化；这里为了演示几种不同的缓存实现，所以直接在这里初始化
         KVCache.initialize(this, provider)
 
-        val cacheProvider = KVCache.cacheProvider()
+        val cacheProvider = KVCache.getProvider()
 
         Log.d(TAG, "CacheProvider: $cacheProvider")
         builder.append("CacheProvider: $cacheProvider").append("\n")
@@ -67,10 +78,10 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "$cacheProvider: float = ${KVCache.getFloat("float")}")
         builder.append("$cacheProvider: float = ${KVCache.getFloat("float")}").append("\n")
 
-        KVCache.remove("float")
-
-        Log.d(TAG, "$cacheProvider: remove.. float = ${KVCache.getFloat("float")}")
-        builder.append("$cacheProvider: remove.. float = ${KVCache.getFloat("float")}").append("\n")
+//        KVCache.remove("float")
+//
+//        Log.d(TAG, "$cacheProvider: remove.. float = ${KVCache.getFloat("float")}")
+//        builder.append("$cacheProvider: remove.. float = ${KVCache.getFloat("float")}").append("\n")
 
         val i = 2
         KVCache.put("int", i)
@@ -97,25 +108,20 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "$cacheProvider: string = ${KVCache.getString("string")}")
         builder.append("$cacheProvider: string = ${KVCache.getString("string")}").append("\n")
 
-        val stringSet = setOf("1", "2", "3")
+        val stringSet = setOf("A", "B", "C")
         KVCache.put("stringSet", stringSet)
         Log.d(TAG, "$cacheProvider: stringSet = ${KVCache.getStringSet("stringSet")}")
         builder.append("$cacheProvider: stringSet = ${KVCache.getStringSet("stringSet")}").append("\n")
 
-        // 如果使用的是 MMKV 或 Memory 缓存实现，则额外支持缓存 ByteArray 和 Parcelable
-        if (KVCache.cacheProvider() == KVCache.Provider.MMKV_CACHE || KVCache.cacheProvider() == KVCache.Provider.MEMORY_CACHE) {
+        val byteArray: ByteArray = byteArrayOf(1, 2, 3)
+        KVCache.put("byteArray", byteArray)
+        Log.d(TAG, "$cacheProvider: byteArray = ${KVCache.getByteArray("byteArray")?.toList()}")
+        builder.append("$cacheProvider: byteArray = ${KVCache.getByteArray("byteArray")?.toList()}").append("\n")
 
-            val byteArray: ByteArray = byteArrayOf(1, 2, 3)
-            KVCache.put("byteArray", byteArray)
-            Log.d(TAG, "$cacheProvider: byteArray = ${KVCache.getByteArray("byteArray")?.toList()}")
-            builder.append("$cacheProvider: byteArray = ${KVCache.getByteArray("byteArray")?.toList()}").append("\n")
-
-            val p = ParcelableBean("ParcelableBean", 10, true)
-            KVCache.put("parcelable", p)
-            Log.d(TAG, "$cacheProvider: parcelable = ${KVCache.getParcelable<ParcelableBean>("parcelable")}")
-            builder.append("$cacheProvider: parcelable = ${KVCache.getParcelable<ParcelableBean>("parcelable")}").append("\n")
-
-        }
+        val p = ParcelableBean("ParcelableBean", 10, true)
+        KVCache.put("parcelable", p)
+        Log.d(TAG, "$cacheProvider: parcelable = ${KVCache.getParcelable<ParcelableBean>("parcelable")}")
+        builder.append("$cacheProvider: parcelable = ${KVCache.getParcelable<ParcelableBean>("parcelable")}").append("\n")
 
         Log.d(TAG, "// -------- kvCache")
         builder.append("// -------- kvCache").append("\n")
@@ -146,9 +152,13 @@ class MainActivity : AppCompatActivity() {
 
 
         Log.d(TAG, "// ------------------------------------------------ //")
-        builder.append("// ------------------------------------------------ //").append("\n\n")
+        builder.append("// -------------------------------- //").append("\n\n")
 
         binding.tv.append(builder)
+    }
+
+    companion object {
+        private const val TAG = "KVCache"
     }
 
 }
