@@ -43,36 +43,37 @@ implementation 'com.github.jenly1314:kvcache:1.2.0'
 ### KVCache 初始化
 ```kotlin
 
-// 建议在 Application 中进行初始化
-KVCache.initialize(this, provider)
+    // 建议在 Application 中进行初始化
+    KVCache.initialize(this, provider)
 
 ```
 
-### Provider 说明
+KVCache初始化时，关于 Provider 参数相关说明如下：
+
 ```kotlin
-       /**
-         * 使用 MMKV 提供缓存实现；需依赖 MMKV
-         */
-        Provider.MMKV_CACHE
-        /**
-         * 使用 DataStore 提供缓存实现；需依赖 DataStore
-         */
-        Provider.DATA_STORE_CACHE
-        /**
-         * 使用 SharedPreferences 提供缓存实现
-         */
-        Provider.SHARED_PREFERENCES_CACHE
-        /**
-         * 使用 Memory 提供缓存实现
-         */
-        Provider.MEMORY_CACHE
+   /**
+     * 使用 MMKV 提供缓存实现；需依赖 MMKV
+     */
+    Provider.MMKV_CACHE
+    /**
+     * 使用 DataStore 提供缓存实现；需依赖 DataStore
+     */
+    Provider.DATA_STORE_CACHE
+    /**
+     * 使用 SharedPreferences 提供缓存实现
+     */
+    Provider.SHARED_PREFERENCES_CACHE
+    /**
+     * 使用 Memory 提供缓存实现
+     */
+    Provider.MEMORY_CACHE
 ```
 
 > 初始化 KVCache 时，如果不传 provider, 则会自动决定缓存实现：优先级从高到低依次为： MMKV -> DataStore -> SharedPreferences -> Memory
 
 ### KVCache 基本使用示例
 
-KVCache的主要函数大多以 `put` 和 `get` 开头，使用时和 **bundle** 类似；
+KVCache的主要函数大多以`put`和`get`开头，基本都是通过`put`缓存键值对，通过`get`获取键对应的缓存；使用方式和 **bundle** 类似；
 
 ```kotlin
 
@@ -116,7 +117,7 @@ KVCache的主要函数大多以 `put` 和 `get` 开头，使用时和 **bundle**
 
 ### KVCache 属性委托使用示例
 
-KVCache属性委托目前定义的函数都是 **kvCache** 开头，使用起来也比较简单；
+KVCache属性委托目前定义的函数都是 `kvCache` 开头，使用起来也比较简单；
 
 示例如下：
 
