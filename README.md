@@ -12,9 +12,9 @@
 
 KVCache 是一个便于统一管理的键值缓存库；支持无缝切换缓存实现。
 
-### 主要有如下特点：
+**主要有如下特点：**
 
-* 你可以无需关心 API 之间的差异，无缝切换至：**MMKV** 、 **DataStore** 、 **SharedPreferences** 缓存的实现；
+* 你可以无需关心 API 之间的差异，无缝切换至：**MMKV** 、**DataStore** 、**SharedPreferences**、**Memory** 缓存的实现；
 * 利用Kotlin的委托属性特性，使用更简洁。
 
 ## 引入
@@ -48,7 +48,7 @@ implementation 'com.github.jenly1314:kvcache:1.2.0'
 
 ```
 
-KVCache初始化时，关于 Provider 参数相关说明如下：
+KVCache初始化时，关于 **Provider** 参数的相关说明如下：
 
 ```kotlin
    /**
