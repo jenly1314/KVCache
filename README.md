@@ -32,7 +32,7 @@ KVCache 是一个便于统一管理的键值缓存库；支持无缝切换缓存
 2. 在Module的 **build.gradle** 里面添加引入依赖项
 
     ```gradle
-    implementation 'com.github.jenly1314:kvcache:1.2.0'
+    implementation 'com.github.jenly1314:kvcache:1.3.0'
     ```
 
 ## 使用
@@ -67,6 +67,8 @@ KVCache初始化时，关于 **Provider** 参数的相关说明如下：
 ```
 
 > 初始化 KVCache 时，如果不传 provider, 则会自动决定缓存实现：优先级从高到低依次为： MMKV -> DataStore -> SharedPreferences -> Memory
+
+> 当需要进行单元测试时，使用`Memory` 是一个非常不错的选择。
 
 ### KVCache 基本使用示例
 
@@ -262,6 +264,11 @@ MemoryCache: kvCache -> arg5 = true
 
 
 ## 版本记录
+
+#### v1.3.0：2024-2-3
+* 更新Gradle至v8.0
+* 新增 `getOrDefault` 函数
+* 优化Java调用方式
 
 #### v1.2.0：2023-2-26
 * 支持清空缓存（新增 `clear()` 函数）
