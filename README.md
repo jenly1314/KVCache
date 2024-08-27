@@ -3,7 +3,6 @@
 [![Download](https://img.shields.io/badge/download-App-blue.svg)](https://raw.githubusercontent.com/jenly1314/KVCache/master/app/release/app-release.apk)
 [![MavenCentral](https://img.shields.io/maven-central/v/com.github.jenly1314/kvcache)](https://repo1.maven.org/maven2/com/github/jenly1314/kvcache/)
 [![JitPack](https://jitpack.io/v/jenly1314/KVCache.svg)](https://jitpack.io/#jenly1314/KVCache)
-[![CI](https://app.travis-ci.com/jenly1314/KVCache.svg?branch=master)](https://app.travis-ci.com/github/jenly1314/KVCache/)
 [![CircleCI](https://circleci.com/gh/jenly1314/KVCache.svg?style=svg)](https://circleci.com/gh/jenly1314/KVCache)
 [![API](https://img.shields.io/badge/API-21%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/mit-license.php)
@@ -12,7 +11,7 @@ KVCache 是一个便于统一管理的键值缓存库；支持无缝切换缓存
 
 **主要有如下特点：**
 
-* 支持无缝切换缓存的实现；（主要包括：**MMKV** 、**DataStore** 、**SharedPreferences**、**Memory**）
+* 支持无缝切换缓存的实现；（主要包括：**MMKV** 、**DataStore** 、**SharedPreferences**、**Memory** ）
 * 你可以无需关心 API 之间的差异，使用时就像使用Map一样简单；
 * 利用Kotlin的委托属性特性，使用更简洁。
 
@@ -132,8 +131,8 @@ KVCache属性委托目前定义的函数都是 `kvCache` 开头，使用起来�
     var arg4 by kvCache("argBool", false)
     // 这里让 arg4 和 arg5 指向相同的key
     var arg5 by kvCacheBoolean("argBool")
-    
-    
+
+
     //... 使用
 
     // 属性委托：arg1 = 5 相当于：KVCache.put("arg1", 5)，再打印查看 KVCache.getInt("arg1") 的值
@@ -250,20 +249,15 @@ MemoryCache: kvCache -> arg5 = true
 // ------------------------------------------------ //
 ```
 
-更多使用详情，请查看[app](app)中的源码使用示例或直接查看[API帮助文档](https://jitpack.io/com/github/jenly1314/KVCache/latest/javadoc/)
+更多使用详情，请查看[app](app)中的源码使用示例或直接查看[API帮助文档](https://jenly1314.github.io/KVCache/api/)
 
 ## 相关推荐
 
 #### [AndroidKTX](https://github.com/AndroidKTX/AndroidKTX) 一个简化 Android 开发的 Kotlin 工具类集
 
-## 感谢
+<!-- end -->
 
-[MMKV](https://github.com/tencent/MMKV)
-
-[DataStore](https://developer.android.google.cn/jetpack/androidx/releases/datastore)
-
-
-## 版本记录
+## 版本日志
 
 #### v1.3.0：2024-2-3
 * 更新Gradle至v8.0
@@ -275,7 +269,7 @@ MemoryCache: kvCache -> arg5 = true
 * 优化细节
 
 #### v1.1.0：2022-12-16
-* 新增**MemoryCache**
+* 新增`MemoryCache`
 
 #### v1.0.1：2022-7-21
 * 支持属性委托
@@ -307,4 +301,4 @@ MemoryCache: kvCache -> arg5 = true
    <img src="https://jenly1314.github.io/image/page/footer.png">
 </div>
 
-   
+
