@@ -5,6 +5,7 @@ pluginManagement {
         mavenCentral()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -14,5 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "KVCache"
-include ':app'
-include ':kvcache'
+include(":app", ":kvcache")
