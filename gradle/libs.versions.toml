@@ -1,0 +1,38 @@
+[versions]
+compileSdk = "30"
+minSdk = "21"
+targetSdk = "30"
+
+agp = "8.1.2"
+kotlin = "1.8.10"
+dokka = "1.9.20"
+mavenPublish = "0.25.3"
+
+appcompat = "1.2.0"
+coreKtx = "1.6.0"
+material = "1.2.1"
+constraintlayout = "2.0.1"
+junit = "4.13.1"
+androidExtJunit = "1.1.2"
+espressoCore = "3.3.0"
+mmkv = "1.2.16"
+datastore = "1.0.0"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+junit4 = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidExtJunit" }
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+tencent-mmkv = { group = "com.tencent", name = "mmkv", version.ref = "mmkv" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
