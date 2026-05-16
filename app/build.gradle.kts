@@ -4,6 +4,11 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
 }
 
+val appVersionCode = properties["VERSION_CODE"]?.toString()?.toInt()
+    ?: error("Missing VERSION_CODE in gradle.properties")
+val appVersionName = properties["VERSION_NAME"]?.toString()
+    ?: error("Missing VERSION_NAME in gradle.properties")
+
 android {
     namespace = "com.king.kvcache.app"
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -12,8 +17,8 @@ android {
         applicationId = "com.king.kvcache.app"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = properties["VERSION_CODE"].toString().toInt()
-        versionName = properties["VERSION_NAME"].toString()
+        versionCode = appVersionCode
+        versionName = appVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
